@@ -1,0 +1,52 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: zookeeper
+  labels:
+    application: zookeeper
+spec:
+  replicas: {{ .Values.zookeeper.replicaCount }}
+  selector:
+    matchLabels:
+      application: zookeeper
+  template:
+    metadata:
+      labels:
+        application: zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: "{{ .Values.zookeeper.image }}"
+          imagePullPolicy: {{ .Values.zookeeper.imagePullPolicy }}
+          command:
+            - /opt/zookeeper/bin/zkServer.sh
+            - start-foreground
+          ports:
+            - name: http
+              containerPort: 2181
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - jps | grep --silent QuorumPeer
+          readinessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+{{ toYaml .Values.zookeeper.resources | indent 12 }}
+    {{- with .Values.zookeeper.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.zookeeper.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.zookeeper.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

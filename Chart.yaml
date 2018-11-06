@@ -1,0 +1,9 @@
+apiVersion: v1
+appVersion: "1.0"
+description: A Helm chart for Open Kilda
+name: openkilda-helm-charts
+version: 0.1.0
+sources:
+  - https://github.com/aptira/openkilda-helm-charts
+maintainers:
+  - name: Aptira Pty Ltd
