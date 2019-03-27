@@ -1,0 +1,38 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: storm-supervisor
+  labels:
+    application: storm-supervisor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: storm-supervisor
+  template:
+    metadata:
+      labels:
+        application: storm-supervisor
+    spec:
+      containers:
+        - name: storm-supervisor
+          image: 10.0.0.21:5000/openkilda/zookeeper:3.4.9
+          imagePullPolicy: IfNotPresent
+          command:
+            - /opt/zookeeper/bin/zkServer.sh
+            - start-foreground
+          ports:
+            - name: http
+              containerPort: 2181
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - jps | grep --silent QuorumPeer
+          readinessProbe:
+            tcpSocket:
+              port: 2181
+            initialDelaySeconds: 15
+            periodSeconds: 20

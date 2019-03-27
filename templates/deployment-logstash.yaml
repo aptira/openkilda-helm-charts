@@ -1,0 +1,39 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: logstash
+  labels:
+    application: logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: logstash
+  template:
+    metadata:
+      labels:
+        application: logstash
+    spec:
+      containers:
+        - name: logstash
+          image: 10.0.0.21:5000/openkilda/logstash:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: tcp0
+              containerPort: 5000
+              protocol: TCP
+            - name: tcp1
+              containerPort: 5001
+              protocol: TCP
+            - name: tcp2
+              containerPort: 5002
+              protocol: TCP
+            - name: tcp3
+              containerPort: 5003
+              protocol: TCP
+            - name: tcp4
+              containerPort: 5004
+              protocol: TCP
+            - name: tcp5
+              containerPort: 5005
+              protocol: TCP

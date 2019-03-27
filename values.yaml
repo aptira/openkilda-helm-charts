@@ -36,3 +36,13 @@ zookeeper:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+elasticsearch:
+  image: elasticsearch:5.6.5
+  imagePullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

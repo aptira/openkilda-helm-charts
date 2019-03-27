@@ -1,0 +1,51 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: elasticsearch
+  labels:
+    application: elasticsearch
+spec:
+  replicas: {{ .Values.elasticsearch.replicaCount }}
+  selector:
+    matchLabels:
+      application: elasticsearch
+  template:
+    metadata:
+      labels:
+        application: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: "{{ .Values.elasticsearch.image }}"
+          imagePullPolicy: {{ .Values.elasticsearch.imagePullPolicy }}
+          ports:
+            - name: serving
+              containerPort: 9200
+              protocol: TCP
+            - name: node2node
+              containerPort: 9300
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 9200
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          livenessProbe:
+            tcpSocket:
+              port: 9200
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+{{ toYaml .Values.elasticsearch.resources | indent 12 }}
+    {{- with .Values.elasticsearch.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.elasticsearch.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.elasticsearch.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: storm-nimbus
+  labels:
+    application: storm
+    component: nimbus
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6627
+      targetPort: 6627
+      protocol: TCP
+      name: port6627
+    - port: 3772
+      targetPort: 3772
+      protocol: TCP
+      name: port3772
+    - port: 3773
+      targetPort: 3773
+      protocol: TCP
+      name: port3773
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+      name: port8000
+  selector:
+    application: storm
+    component: nimbus

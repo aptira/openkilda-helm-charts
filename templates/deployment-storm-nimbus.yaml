@@ -1,0 +1,54 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: storm-nimbus
+  labels:
+    application: storm
+    component: nimbus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: storm
+      component: nimbus
+  template:
+    metadata:
+      labels:
+        application: storm
+        component: nimbus
+    spec:
+      containers:
+        - name: storm-nimbus
+          image: 10.0.0.21:5000/openkilda/storm:1.1.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /app/wait-for-it.sh
+          args:
+            - -t
+            - "120"
+            - -h
+            - zookeeper.pendev
+            - -p
+            - "2181"
+            - --
+            - /opt/storm/bin/storm nimbus
+          ports:
+            - containerPort: 6627
+              protocol: TCP
+            - containerPort: 3772
+              protocol: TCP
+            - containerPort: 3773
+              protocol: TCP
+            - containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - jps | grep --silent nimbus
+          readinessProbe:
+            tcpSocket:
+              port: 6627
+            initialDelaySeconds: 15
+            periodSeconds: 20

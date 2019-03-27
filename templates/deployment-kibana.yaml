@@ -1,0 +1,28 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: kibana
+  labels:
+    application: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: kibana
+  template:
+    metadata:
+      labels:
+        application: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: kibana:5.6.5
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5601
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 5601
+            initialDelaySeconds: 15
+            periodSeconds: 20

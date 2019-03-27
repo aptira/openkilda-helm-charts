@@ -1,0 +1,48 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: storm-ui
+  labels:
+    application: storm
+    component: ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: storm
+      component: ui
+  template:
+    metadata:
+      labels:
+        application: storm
+        component: ui
+    spec:
+      containers:
+        - name: storm-ui
+          image: 10.0.0.21:5000/openkilda/storm:1.1.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /app/wait-for-it.sh
+          args:
+            - -t
+            - "120"
+            - -h
+            - zookeeper.pendev
+            - -p
+            - "2181"
+            - --
+            - /opt/storm/bin/storm ui
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - jps | grep --silent core
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
